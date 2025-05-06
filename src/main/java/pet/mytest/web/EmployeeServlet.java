@@ -1,19 +1,18 @@
 package pet.mytest.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
 
 import pet.mytest.BeanFactory;
 import pet.mytest.service.EmployeeService;
 import pet.mytest.web.impl.EmployeeDefaultHandler;
 import pet.mytest.web.impl.EmployeeSearchServletHandlerImpl;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class EmployeeServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(this.getClass());
+        this.logger = LoggerFactory.getLogger(EmployeeServlet.class);
         BeanFactory factory = BeanFactory.getInstance();
         this.employeeService = factory.getObject(EmployeeService.class);
         mapper = factory.getMapper();
@@ -40,11 +39,11 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.getPathInfo();
         String pathInfo = req.getPathInfo();
         ServletHandler handler = handlers.get(pathInfo);
-//        logger.debug("EMPLOYEE SERVLET REQUEST RECEIVED : " + req.getRequestURI() + "?" + req.getQueryString());
+        logger.debug("EMPLOYEE SERVLET REQUEST RECEIVED : " + req.getRequestURI() + "?" + req.getQueryString());
         if(handler != null){
             try {
              handler.handle(req, resp);

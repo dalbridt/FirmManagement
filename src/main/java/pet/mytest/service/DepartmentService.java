@@ -1,13 +1,12 @@
 package pet.mytest.service;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pet.entities.Department;
 import pet.mytest.dao.DepartmentDaoService;
 import pet.mytest.dao.EmployeeDaoService;
-import pet.mytest.exceptions.InvalidDataException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class DepartmentService {
@@ -19,7 +18,7 @@ public class DepartmentService {
     public DepartmentService(DepartmentDaoService departmentDaoService, EmployeeDaoService employeeDaoService) {
         this.departmentDaoService = departmentDaoService;
         this.employeeDaoService = employeeDaoService;
-        logger = Logger.getLogger(this.getClass());
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     public int addDepartment(Department department) {

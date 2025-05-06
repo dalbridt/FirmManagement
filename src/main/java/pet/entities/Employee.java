@@ -1,18 +1,27 @@
 package pet.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+@Entity
+@Table (name = "employee")
 public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    @Column(name = "department_id")
     private int departmentId;
     private String role;
     private String location;
     private double salary;
+    @Column(name = "hire_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
+
+    public Employee() {}
 
     public int getId() {
         return id;

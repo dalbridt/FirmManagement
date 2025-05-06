@@ -3,7 +3,8 @@ package pet.mytest.web.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pet.entities.Employee;
 import pet.mytest.exceptions.InvalidDataException;
 import pet.mytest.service.EmployeeService;
@@ -22,7 +23,7 @@ public class EmployeeDefaultHandler implements ServletHandler {
     public EmployeeDefaultHandler(EmployeeService employeeService, ObjectMapper mapper) {
         this.employeeService = employeeService;
         this.mapper = mapper;
-        this.logger = Logger.getLogger(EmployeeDefaultHandler.class);
+        this.logger = LoggerFactory.getLogger(EmployeeDefaultHandler.class);
     }
 
     @Override

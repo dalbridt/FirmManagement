@@ -3,7 +3,8 @@ package pet.mytest.web.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pet.entities.Department;
 import pet.mytest.exceptions.InvalidDataException;
 import pet.mytest.service.DepartmentService;
@@ -11,7 +12,6 @@ import pet.mytest.web.HandlerUtils;
 import pet.mytest.web.ServletHandler;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class DepartmentDefaultHandler implements ServletHandler {
@@ -22,7 +22,7 @@ public class DepartmentDefaultHandler implements ServletHandler {
     public DepartmentDefaultHandler(DepartmentService departmentService, ObjectMapper mapper) {
         this.departmentService = departmentService;
         this.mapper = mapper;
-        this.logger = Logger.getLogger(DepartmentDefaultHandler.class);
+        this.logger = LoggerFactory.getLogger(DepartmentDefaultHandler.class);
     }
 
     @Override
@@ -66,7 +66,8 @@ public class DepartmentDefaultHandler implements ServletHandler {
                 HandlerUtils.sendResponse(response, "couldn't add new department", 400);
             }
         } else {
-            HandlerUtils.sendResponse(response, "couldn't parse request", 400);
+            // todo throw invalid data exception
+            HandlerUtils.sendResponse(response, "couldn't parse request,no json provided in POST", 400);
         }
     }
 }

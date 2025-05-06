@@ -1,7 +1,8 @@
 package pet.mytest.dao;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pet.entities.Department;
 import pet.mytest.exceptions.DatabaseException;
 
@@ -27,7 +28,7 @@ public class DepartmentDaoService {
 
     public DepartmentDaoService(DataSource ds) {
         this.ds = ds;
-        logger = Logger.getLogger(this.getClass());
+        logger = LoggerFactory.getLogger(DepartmentDaoService.class);
     }
 
     public int addNewDepartment(Department department) {

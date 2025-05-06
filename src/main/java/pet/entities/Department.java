@@ -1,8 +1,15 @@
 package pet.entities;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table (name = "department")
 public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    @Column(name = "manager_id")
     private int managerId;
 
     public Department() {}

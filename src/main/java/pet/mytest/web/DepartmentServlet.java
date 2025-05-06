@@ -1,12 +1,10 @@
 package pet.mytest.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import pet.entities.Department;
 import pet.mytest.BeanFactory;
 
 import org.slf4j.Logger;
@@ -17,9 +15,9 @@ import pet.mytest.web.impl.DepartmentSearchHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @WebServlet("/department/*")
 public class DepartmentServlet extends HttpServlet {

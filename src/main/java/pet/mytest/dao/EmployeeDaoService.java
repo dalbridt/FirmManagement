@@ -1,6 +1,10 @@
 package pet.mytest.dao;
 
-import org.apache.log4j.Logger;
+import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import pet.entities.Employee;
 import pet.entities.EmployeeSearchFilter;
 import pet.mytest.exceptions.DatabaseException;
@@ -13,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDaoService {
-    private static final String SELECT_FROM_EMPLOYEE_WHERE_ID = "select * from employee where id = ?";
-    private static final String INSERT_INTO_EMPLOYEE = "insert into employee (name, department_id, role, location, salary, hire_date) values(?,?,?,?,?, ?)";
+    private final SessionFactory sessionFactory;
     private static final String EMPLOYEE_WHERE_DEPARTMENT_ID = "select * from employee where department_id = ?";
     private final String DELETE_EMPLOYEE_WHERE_ID = "delete from employee where id = ?";
 
@@ -22,78 +25,40 @@ public class EmployeeDaoService {
     Logger logger;
 
 
-    public EmployeeDaoService(DataSource ds) {
+    public EmployeeDaoService(DataSource ds, SessionFactory sessionFactory) {
         this.ds = ds;
-        logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(EmployeeDaoService.class);
+
+        this.sessionFactory = sessionFactory;
     }
 
+    // todo remake whole dao with hibernate methods
     public Employee getEmployeeById(int id) {
-        try (Connection conn = ds.getConnection(); PreparedStatement pst = conn.prepareStatement(SELECT_FROM_EMPLOYEE_WHERE_ID)) {
-            pst.setInt(1, id);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToEmployee(rs);
-                }
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("couldn't get employee by id" + e.getMessage());
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(Employee.class, id);
         }
-        return null;
     }
 
     public int addEmployee(Employee employee) {
-        try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(INSERT_INTO_EMPLOYEE, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, employee.getName());
-            pstmt.setInt(2, employee.getDepartmentId());
-            pstmt.setString(3, employee.getRole());
-            if (employee.getLocation() != null) {
-                pstmt.setString(4, employee.getLocation());
-            } else {
-                pstmt.setNull(4, java.sql.Types.VARCHAR);
-            }
-            pstmt.setDouble(5, employee.getSalary());
-            if (employee.getHireDate() != null) {
-                Timestamp hireDateTmstmp = Timestamp.valueOf(employee.getHireDate().atStartOfDay());
-                pstmt.setTimestamp(6, hireDateTmstmp);
-            } else {
-                pstmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-            }
-            int rowsUpdated = pstmt.executeUpdate();
-            if (rowsUpdated > 0) {
-                try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return rs.getInt(1);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("couldn't add employee: " + e.getMessage());
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.persist(employee);
+            tx.commit();
+            logger.debug("Employee added: " + employee);
+            return employee.getId();
         }
-        return -1;
+        // todo нужно ли перехватывать и бросать database exception?
     }
 
-    public List<Employee> getEmployeesByDepartmentId(int id) {
-        List<Employee> employees = new ArrayList<>();
-        try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(EMPLOYEE_WHERE_DEPARTMENT_ID)) {
-            pstmt.setInt(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    employees.add(mapResultSetToEmployee(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("couldn't get employee by department id" + e.getMessage());
-        }
-        return employees;
-    }
 
     public boolean deleteEmployee(int id) {
-        try (Connection conn = ds.getConnection(); PreparedStatement pst = conn.prepareStatement(DELETE_EMPLOYEE_WHERE_ID)) {
-            pst.setInt(1, id);
-            int rowsUpdated = pst.executeUpdate();
-            return rowsUpdated > 0;
-        } catch (SQLException e) {
-            throw new DatabaseException("couldn't delete employee: " + e.getMessage());
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            Employee employee = session.get(Employee.class, id);
+            session.remove(employee);
+            tx.commit();
+            logger.debug("Employee deleted: " + employee);
+            return true;
         }
     }
 

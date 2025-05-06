@@ -1,13 +1,15 @@
 package pet.mytest.service;
 
-import org.apache.log4j.Logger;
+
 import pet.entities.Employee;
 import pet.entities.EmployeeSearchFilter;
 import pet.mytest.dao.DepartmentDaoService;
 import pet.mytest.dao.EmployeeDaoService;
 import pet.mytest.exceptions.DatabaseException;
 
-import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 
@@ -19,12 +21,9 @@ public class EmployeeService {
     public EmployeeService(EmployeeDaoService employeeDaoService, DepartmentDaoService departmentDaoService) {
         this.employeeDaoService = employeeDaoService;
         this.departmentDaoService = departmentDaoService;
-        this.logger = Logger.getLogger(this.getClass());
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public List<Employee> getEmployeesByDepartmentId(int departmentId) {
-        return employeeDaoService.getEmployeesByDepartmentId(departmentId);
-    }
 
     public boolean deleteEmployee(int id) {
         if (employeeDaoService.getEmployeeById(id) != null) {

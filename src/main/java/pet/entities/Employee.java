@@ -12,8 +12,10 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @Column(name = "department_id")
-    private int departmentId;
+
+    @ManyToOne(fetch = FetchType.LAZY) // todo кто должен быть владельцем связи?
+    @JoinColumn(name = "department_id")
+    private Department department;
     private String role;
     private String location;
     private double salary;
@@ -29,14 +31,6 @@ public class Employee {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(int departmentId) {
-        this.departmentId = departmentId;
     }
 
     public String getName() {
@@ -76,6 +70,13 @@ public class Employee {
 
     public void setHireDate(LocalDate hireDate) {
         this.hireDate = hireDate;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
 }

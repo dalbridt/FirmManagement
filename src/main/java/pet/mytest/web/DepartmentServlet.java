@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 import java.util.Map;
 
-
+// todo @Slf4j - логгер через аннотацию
 @WebServlet("/department/*")
 public class DepartmentServlet extends HttpServlet {
     private Logger logger;
@@ -42,10 +42,10 @@ public class DepartmentServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        logger.debug("RECEIVED REQUEST DEPARTMENT SERVLET: " + req.getRequestURI() + "?" + req.getQueryString());
         req.getPathInfo();
         String pathInfo = req.getPathInfo();
         ServletHandler handler = handlers.get(pathInfo);
-        logger.debug("service executed : " + pathInfo);
         if(handler != null){
             try {
                 handler.handle(req, resp);

@@ -37,9 +37,10 @@ public class EmployeeService {
            //todo ошибка валидации, сдлеать ошибку
             throw new DatabaseException("Not enough information. Employee name role and salary can't be empty");
         }
-        if(departmentDaoService.getDepartmentById(emp.getDepartmentId()) == null) {
-            throw new DatabaseException("Not enough information. Department not found");
-        }
+        // TODO нужна новая проверка
+//        if(departmentDaoService.getDepartmentById(emp.getDepartmentId()) == null) {
+//            throw new DatabaseException("Not enough information. Department not found");
+//        }
         return employeeDaoService.addEmployee(emp);
     }
 

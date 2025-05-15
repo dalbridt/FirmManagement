@@ -1,38 +1,27 @@
 package pet.mytest.dao;
 
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import pet.entities.Employee;
 import pet.entities.EmployeeSearchFilter;
-import pet.mytest.exceptions.DatabaseException;
-
-import javax.sql.DataSource;
-import java.sql.*;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDaoService {
     private final SessionFactory sessionFactory;
-    private static final String EMPLOYEE_WHERE_DEPARTMENT_ID = "select * from employee where department_id = ?";
-    private final String DELETE_EMPLOYEE_WHERE_ID = "delete from employee where id = ?";
-
-    private final DataSource ds;
     Logger logger;
 
 
-    public EmployeeDaoService(DataSource ds, SessionFactory sessionFactory) {
-        this.ds = ds;
+    public EmployeeDaoService(SessionFactory sessionFactory) {
+        // todo сделать логгер статик во всех классах + инициализацию сразу при объявлении
         this.logger = LoggerFactory.getLogger(EmployeeDaoService.class);
-
         this.sessionFactory = sessionFactory;
     }
 
-    // todo remake whole dao with hibernate methods
+    // todo не показывает первого
     public Employee getEmployeeById(int id) {
         try (Session session = sessionFactory.openSession()) {
             return session.get(Employee.class, id);
@@ -50,7 +39,6 @@ public class EmployeeDaoService {
         // todo нужно ли перехватывать и бросать database exception?
     }
 
-
     public boolean deleteEmployee(int id) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
@@ -62,92 +50,60 @@ public class EmployeeDaoService {
         }
     }
 
-    private Employee mapResultSetToEmployee(ResultSet rs) throws SQLException {
-        Employee employee = new Employee();
-        employee.setId(rs.getInt("id"));
-        employee.setName(rs.getString("name"));
-        employee.setDepartmentId(rs.getInt("department_id"));
-        if (rs.getString("role") != null) {
-            employee.setRole(rs.getString("role"));
-        }
-        if (rs.getString("location") != null) {
-            employee.setLocation(rs.getString("location"));
-        }
-        employee.setSalary(rs.getDouble("salary"));
-        Timestamp hireDate = rs.getTimestamp("hire_date");
-        if (hireDate != null) {
-            LocalDate hiredate = LocalDate.ofInstant(hireDate.toInstant(), ZoneId.systemDefault());
-            employee.setHireDate(hiredate);
-        }
-        return employee;
-    }
-
+    // todo add hireDateBeforeFilter Won't Work
     public List<Employee> getEmployeesByFilters(EmployeeSearchFilter filter) {
-        logger.debug("getEmployeesByFilters called in dao");
-        List<Employee> employees = new ArrayList<>();
-        String sql = formQueryFromFilters(filter);
-        logger.debug("Executing SQL:" + sql);
-        try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);
-             ) {
-            modifyPreparedStatement(pstmt, filter);
-            try(ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    employees.add(mapResultSetToEmployee(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("couldn't get employee by filters: " + e.getMessage());
+        // todo использовать Criteria?
+        try (Session session = sessionFactory.openSession()) {
+            String hql = formHqlFromFilters(filter);
+            Query<Employee> query  = session.createQuery(hql,Employee.class);
+            modifyQuery(query, filter);
+        logger.debug("HIBERNATE REQUST EMPL with params test ");
+            return query.getResultList();
         }
-        return employees;
     }
 
-
-    private String formQueryFromFilters(EmployeeSearchFilter filter) {
-        logger.debug("formQueryFromFilters called  going to assemble query");
-        StringBuilder sql = new StringBuilder();
-        sql.append("select * from employee where 1 = 1");
+    private String formHqlFromFilters(EmployeeSearchFilter filter) {
+        logger.debug("assemble query from filters execute: ");
+        StringBuilder hql = new StringBuilder();
+        hql.append( "from Employee where 1=1");
         if (filter.getDepartmentId() != null && filter.getDepartmentId() > 0) {
-            sql.append(" and department_id = ?");
+            hql.append(" and departmentId = :departmentId");
         }
-        logger.debug("1 ");
+
         if (filter.getHireDateFrom() != null) {
-            sql.append(" and hire_date > ?");
+            hql.append(" and hireDate > :hireDateFrom");
         }
-        logger.debug("2 ");
+
         if (filter.getHireDateBefore() != null) {
-            sql.append(" and hire_date < ?");
+            hql.append(" and hireDate < :hireDateBefore");
         }
-        logger.debug("3 ");
+
         if (filter.getRole() != null) {
-            sql.append(" and role like ?");
+            hql.append(" and role like :role");
         }
-        logger.debug("4 ");
+
         if (filter.getLocation() != null) {
-            sql.append(" and location like ?");
+            hql.append(" and location like :location");
         }
-        return sql.toString();
+        return hql.toString();
     }
 
-    private void modifyPreparedStatement(PreparedStatement pstmt,EmployeeSearchFilter filter) throws SQLException {
-        int count = 1;
-        if (filter.getDepartmentId() !=null) {
-            pstmt.setInt(count, filter.getDepartmentId());
-            count++;
+    private void modifyQuery(Query<Employee> query,EmployeeSearchFilter filter) {
+        if (filter.getDepartmentId() != null && filter.getDepartmentId() > 0) {
+            query.setParameter("departmentId", filter.getDepartmentId());
         }
         if (filter.getHireDateFrom() != null) {
-            pstmt.setTimestamp(count, Timestamp.valueOf(filter.getHireDateFrom().atStartOfDay()));
-            count++;
+            query.setParameter("hireDateFrom", filter.getHireDateFrom());
         }
         if (filter.getHireDateBefore() != null) {
-            pstmt.setTimestamp(count, Timestamp.valueOf(filter.getHireDateBefore().atStartOfDay()));
-            count++;
+            query.setParameter("hireDateBefore", filter.getHireDateBefore());
         }
-        if (filter.getRole() != null) {
-            pstmt.setString(count, filter.getRole());
-            count++;
+        if (filter.getRole() != null && !filter.getRole().isBlank()) {
+            query.setParameter("role", "%" + filter.getRole() + "%");
         }
-        if (filter.getLocation() != null) {
-            pstmt.setString(count, filter.getLocation());
+        if (filter.getLocation() != null && !filter.getLocation().isBlank()) {
+            query.setParameter("location", "%" + filter.getLocation() + "%");
         }
+        logger.debug("modify query: " + query);
     }
 }

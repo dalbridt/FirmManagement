@@ -37,6 +37,16 @@ public class EmployeeSearchServletHandlerImpl implements ServletHandler {
 
         EmployeeSearchFilter employeeSearchFilter = new EmployeeSearchFilter();
 
+        assembleSearchFilter(employeeSearchFilter, request);
+
+        logger.debug("Search filters:" + employeeSearchFilter);
+        // todo add DTO layer? 
+        List<Employee> employees = employeeService.getEmployeesByFilters(employeeSearchFilter);
+        String json = objectMapper.writeValueAsString(employees);
+        HandlerUtils.sendResponse(response, json, 200);
+    }
+
+    private static void assembleSearchFilter(EmployeeSearchFilter employeeSearchFilter, HttpServletRequest request) {
         String departmentId = request.getParameter("departmentId");
         if(departmentId != null) employeeSearchFilter.setDepartmentId(Integer.parseInt(departmentId));
 
@@ -45,7 +55,6 @@ public class EmployeeSearchServletHandlerImpl implements ServletHandler {
             LocalDate hireDate = HandlerUtils.parseDate(hireDateFrom);
             employeeSearchFilter.setHireDateFrom(hireDate);
         }
-
         String hireDateBefore = request.getParameter("hireDateBefore");
         if(hireDateBefore != null){
             LocalDate hireDate = HandlerUtils.parseDate(hireDateBefore);
@@ -56,11 +65,5 @@ public class EmployeeSearchServletHandlerImpl implements ServletHandler {
 
         String location = request.getParameter("location");
         if(location != null) employeeSearchFilter.setLocation(location);
-
-        logger.debug("Search filters:" + employeeSearchFilter);
-
-        List<Employee> employees = employeeService.getEmployeesByFilters(employeeSearchFilter);
-        String json = objectMapper.writeValueAsString(employees);
-        HandlerUtils.sendResponse(response, json, 200);
     }
 }

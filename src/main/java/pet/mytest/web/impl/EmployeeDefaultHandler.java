@@ -1,10 +1,13 @@
 package pet.mytest.web.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pet.dto.EmployeeDTO;
+import pet.dto.EmployeeMapper;
 import pet.entities.Employee;
 import pet.mytest.exceptions.InvalidDataException;
 import pet.mytest.service.EmployeeService;
@@ -41,14 +44,8 @@ public class EmployeeDefaultHandler implements ServletHandler {
         try {
             int id = Integer.parseInt(idStr);
             if (method.equals("GET")) {
-                Employee empl = employeeService.getEmployeeById(id);
-                if (empl != null) {
-                    HandlerUtils.sendResponse(response, mapper.writeValueAsString(empl), 200);
-                } else {
-                    HandlerUtils.sendResponse(response, "NOT FOUND : " + id, 400);
-                }
+                handleGet(response, id);
             } else if (method.equals("DELETE")) {
-                logger.debug("default handler: method: " + method + ", id: " + id);
                 handleDelete(response, id);
             }
         } catch (Exception e) {
@@ -56,13 +53,25 @@ public class EmployeeDefaultHandler implements ServletHandler {
         }
     }
 
+    private void  handleGet(HttpServletResponse response, int id) throws IOException {
+        Employee empl = employeeService.getEmployeeById(id);
+        if (empl != null) {
+            HandlerUtils.sendResponse(response, mapper.writeValueAsString(empl), 200);
+        } else {
+            HandlerUtils.sendResponse(response, "NOT FOUND : " + id, 400);
+        }
+    }
+
     private void handlePost(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         if (!json.isEmpty()) {
-            Employee employee = mapper.readValue(json, Employee.class);
+            EmployeeDTO employeeDTO = mapper.readValue(json, EmployeeDTO.class);
+
+            // todo как быть с депратаментом тут? сходить в базу и взять объект?
+            Employee employee = EmployeeMapper.convertToEntity(employeeDTO);
             try {
                 int newEmployeeId = employeeService.addNewEmployee(employee);
-                HandlerUtils.sendResponse(response, " new employee added:  " + newEmployeeId + " " + employee.getName() + " " + employee.getRole() + "\n", 200);
+                HandlerUtils.sendResponse(response, " new employee added:  " + newEmployeeId + " " + employeeDTO.getName() + " " + employeeDTO.getRole() + "\n", 200);
             } catch (Exception e) {
                 HandlerUtils.sendResponse(response, e.getMessage(), 500);
             }

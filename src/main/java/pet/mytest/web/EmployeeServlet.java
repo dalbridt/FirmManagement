@@ -40,10 +40,10 @@ public class EmployeeServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        logger.debug("RECEIVED REQUEST EMPLOYEE SERVLET: " + req.getRequestURI() + "?" + req.getQueryString());
         req.getPathInfo();
         String pathInfo = req.getPathInfo();
         ServletHandler handler = handlers.get(pathInfo);
-        logger.debug("EMPLOYEE SERVLET REQUEST RECEIVED : " + req.getRequestURI() + "?" + req.getQueryString());
         if(handler != null){
             try {
              handler.handle(req, resp);

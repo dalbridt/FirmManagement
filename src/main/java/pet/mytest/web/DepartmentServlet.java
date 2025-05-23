@@ -18,10 +18,10 @@ import java.util.HashMap;
 
 import java.util.Map;
 
-// todo @Slf4j - логгер через аннотацию
+// todo @Slf4j - логгер через аннотацию ?
 @WebServlet("/department/*")
 public class DepartmentServlet extends HttpServlet {
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(DepartmentServlet.class);
     private DepartmentService departmentService;
     private ObjectMapper mapper;
     private Map<String, ServletHandler> handlers;
@@ -29,7 +29,6 @@ public class DepartmentServlet extends HttpServlet {
 
     @Override
     public void init() {
-        this.logger = LoggerFactory.getLogger(DepartmentServlet.class);
         BeanFactory factory = BeanFactory.getInstance();
         this.departmentService = factory.getObject(DepartmentService.class);
         this.mapper = factory.getMapper();

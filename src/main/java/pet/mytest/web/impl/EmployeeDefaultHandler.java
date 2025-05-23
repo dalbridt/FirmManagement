@@ -21,12 +21,11 @@ import java.util.stream.Collectors;
 public class EmployeeDefaultHandler implements ServletHandler {
     private EmployeeService employeeService;
     ObjectMapper mapper;
-    Logger logger;
+    Logger logger = LoggerFactory.getLogger(EmployeeDefaultHandler.class);
 
     public EmployeeDefaultHandler(EmployeeService employeeService, ObjectMapper mapper) {
         this.employeeService = employeeService;
         this.mapper = mapper;
-        this.logger = LoggerFactory.getLogger(EmployeeDefaultHandler.class);
     }
 
     @Override
@@ -49,14 +48,23 @@ public class EmployeeDefaultHandler implements ServletHandler {
                 handleDelete(response, id);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("couldn't process request", e);
+            throw new InvalidDataException("couldn't process request: " + e.getMessage());
         }
     }
 
+    // todo везде где отправляютя http - ответы длжны быть дто, маппер не конвертирует теперь entity по-нормальному
     private void  handleGet(HttpServletResponse response, int id) throws IOException {
         Employee empl = employeeService.getEmployeeById(id);
         if (empl != null) {
-            HandlerUtils.sendResponse(response, mapper.writeValueAsString(empl), 200);
+            EmployeeDTO employeeDTO = EmployeeMapper.convertToDTO(empl);
+            try{
+                String res = mapper.writeValueAsString(employeeDTO);
+                HandlerUtils.sendResponse(response, res, 200);
+            } catch (Exception e) {
+                throw new InvalidDataException("couldn't serialize to JSON");
+            }
+            // todo перехватывать ошибки от mapper вездде
+
         } else {
             HandlerUtils.sendResponse(response, "NOT FOUND : " + id, 400);
         }

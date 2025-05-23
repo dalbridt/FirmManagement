@@ -15,11 +15,10 @@ public class DepartmentDaoService {
     private final String GET_ALL_DEPARTMENTS = "from Department";
 
     private final SessionFactory sessionFactory;
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(DepartmentDaoService.class);
 
     public DepartmentDaoService(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-        logger = LoggerFactory.getLogger(DepartmentDaoService.class);
     }
 
 

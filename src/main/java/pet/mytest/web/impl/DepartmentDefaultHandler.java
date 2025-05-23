@@ -17,12 +17,11 @@ import java.util.stream.Collectors;
 public class DepartmentDefaultHandler implements ServletHandler {
     private DepartmentService departmentService;
     ObjectMapper mapper;
-    Logger logger;
+    Logger logger = LoggerFactory.getLogger(DepartmentDefaultHandler.class);
 
     public DepartmentDefaultHandler(DepartmentService departmentService, ObjectMapper mapper) {
         this.departmentService = departmentService;
         this.mapper = mapper;
-        this.logger = LoggerFactory.getLogger(DepartmentDefaultHandler.class);
     }
 
     @Override
@@ -38,6 +37,7 @@ public class DepartmentDefaultHandler implements ServletHandler {
         }
         int id = Integer.parseInt(idStr);
         if (method.equals("GET")) {
+            logger.debug("get method called "+ request.getRequestURI());
             Department dep = departmentService.getDepartmentById(id);
             if (dep != null) {
                 HandlerUtils.sendResponse(response, mapper.writeValueAsString(dep), 200);

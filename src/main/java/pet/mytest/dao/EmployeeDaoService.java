@@ -12,18 +12,17 @@ import java.util.List;
 
 public class EmployeeDaoService {
     private final SessionFactory sessionFactory;
-    Logger logger;
+    Logger logger = LoggerFactory.getLogger(EmployeeDaoService.class);
 
 
     public EmployeeDaoService(SessionFactory sessionFactory) {
-        // todo сделать логгер статик во всех классах + инициализацию сразу при объявлении
-        this.logger = LoggerFactory.getLogger(EmployeeDaoService.class);
         this.sessionFactory = sessionFactory;
     }
 
-    // todo не показывает первого
+
     public Employee getEmployeeById(int id) {
         try (Session session = sessionFactory.openSession()) {
+            // todo  не получится получить эмплои с пустым полем salary
             return session.get(Employee.class, id);
         }
     }
@@ -65,7 +64,7 @@ public class EmployeeDaoService {
     private String formHqlFromFilters(EmployeeSearchFilter filter) {
         logger.debug("assemble query from filters execute: ");
         StringBuilder hql = new StringBuilder();
-        hql.append( "from Employee where 1=1");
+        hql.append("from Employee e join fetch e.department where 1=1"); // to avoid lazy initialization exception
         if (filter.getDepartmentId() != null && filter.getDepartmentId() > 0) {
             hql.append(" and departmentId = :departmentId");
         }

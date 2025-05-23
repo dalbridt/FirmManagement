@@ -24,6 +24,10 @@ public class HandlerUtils {
                 break;
             case "InvalidDataException":
                 sendResponse(response, e.getMessage(), 400 );
+                break;
+                default:
+                    sendResponse(response, e.getMessage(), 500 );
+                    break;
         }
     }
 }

@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pet.dto.EmployeeDTO;
+import pet.dto.EmployeeMapper;
 import pet.entities.Employee;
 import pet.entities.EmployeeSearchFilter;
 import pet.mytest.service.EmployeeService;
@@ -13,6 +15,7 @@ import pet.mytest.web.ServletHandler;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,12 +23,11 @@ public class EmployeeSearchServletHandlerImpl implements ServletHandler {
 
     private EmployeeService employeeService;
     private ObjectMapper objectMapper;
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(EmployeeSearchServletHandlerImpl.class);
 
     public EmployeeSearchServletHandlerImpl(EmployeeService employeeService, ObjectMapper objectMapper) {
         this.employeeService = employeeService;
         this.objectMapper = objectMapper;
-        this.logger = LoggerFactory.getLogger(EmployeeSearchServletHandlerImpl.class);
     }
 
     @Override
@@ -40,9 +42,14 @@ public class EmployeeSearchServletHandlerImpl implements ServletHandler {
         assembleSearchFilter(employeeSearchFilter, request);
 
         logger.debug("Search filters:" + employeeSearchFilter);
-        // todo add DTO layer? 
+        // todo add DTO layer?
         List<Employee> employees = employeeService.getEmployeesByFilters(employeeSearchFilter);
-        String json = objectMapper.writeValueAsString(employees);
+        List <EmployeeDTO>  employeesDTO = new ArrayList<>();
+        for (Employee employee : employees) {
+            EmployeeDTO employeeDTO = EmployeeMapper.convertToDTO(employee);
+            employeesDTO.add(employeeDTO);
+        }
+        String json =  objectMapper.writeValueAsString(employeesDTO);
         HandlerUtils.sendResponse(response, json, 200);
     }
 

@@ -3,6 +3,7 @@ package pet.dto;
 import pet.entities.Department;
 import pet.entities.Employee;
 
+// todo перенести в Employee service?
 public class EmployeeMapper {
 
     public static EmployeeDTO convertToDTO(Employee employee) {

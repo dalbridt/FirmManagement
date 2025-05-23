@@ -16,6 +16,7 @@ public class Employee {
     @ManyToOne(fetch = FetchType.LAZY) // todo кто должен быть владельцем связи?
     @JoinColumn(name = "department_id")
     private Department department;
+
     private String role;
     private String location;
     private double salary;
@@ -77,6 +78,11 @@ public class Employee {
     }
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    @Override
+    public String toString(){
+        return id + name + " " + role;
     }
 
 }

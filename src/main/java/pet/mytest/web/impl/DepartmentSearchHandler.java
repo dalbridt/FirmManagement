@@ -14,12 +14,12 @@ import java.io.IOException;
 public class DepartmentSearchHandler implements ServletHandler {
     private DepartmentService departmentService;
     ObjectMapper mapper;
-    Logger logger;
+    Logger logger =  LoggerFactory.getLogger(DepartmentSearchHandler.class);
 
     public DepartmentSearchHandler(DepartmentService departmentService, ObjectMapper mapper) {
         this.departmentService = departmentService;
         this.mapper = mapper;
-        this.logger = LoggerFactory.getLogger(DepartmentSearchHandler.class);
+
     }
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {

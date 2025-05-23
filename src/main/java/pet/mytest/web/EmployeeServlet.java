@@ -20,14 +20,13 @@ import java.util.Map;
 
 @WebServlet("/employee/*")
 public class EmployeeServlet extends HttpServlet {
-    private Logger logger;
+    private Logger logger =  LoggerFactory.getLogger(EmployeeServlet.class);
     private EmployeeService employeeService;
     private ObjectMapper mapper;
     private Map<String, ServletHandler> handlers;
 
     @Override
     public void init() {
-        this.logger = LoggerFactory.getLogger(EmployeeServlet.class);
         BeanFactory factory = BeanFactory.getInstance();
         this.employeeService = factory.getObject(EmployeeService.class);
         mapper = factory.getMapper();

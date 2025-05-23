@@ -1,7 +1,7 @@
 package pet.mytest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.hibernate.SessionFactory;
@@ -13,6 +13,7 @@ import pet.mytest.dao.DepartmentDaoService;
 import pet.mytest.dao.EmployeeDaoService;
 import pet.mytest.service.DepartmentService;
 import pet.mytest.service.EmployeeService;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class BeanFactory {
     private static BeanFactory instance;
@@ -20,10 +21,9 @@ public class BeanFactory {
     private EmployeeDaoService employeeDaoService;
     private ObjectMapper mapper;
     private SessionFactory sessionFactory;
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(BeanFactory.class);
 
     private BeanFactory() {
-        this.logger = LoggerFactory.getLogger(BeanFactory.class);
         logger.debug("BeanFactory initialized");
         try {
             Configuration configuration = new Configuration().configure();
@@ -38,8 +38,10 @@ public class BeanFactory {
         }
         this.departmentDaoService = new DepartmentDaoService(sessionFactory);
         this.employeeDaoService = new EmployeeDaoService(sessionFactory);
-        this.mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        this.mapper = new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        logger.debug("Time Module initialized");
+        // todo дата в json собирается массивом
     }
 
 

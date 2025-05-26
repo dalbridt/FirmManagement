@@ -5,12 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import pet.mytest.service.DepartmentService;
 import pet.mytest.web.HandlerUtils;
 import pet.mytest.web.ServletHandler;
 
 import java.io.IOException;
 
+@Component
 public class DepartmentSearchHandler implements ServletHandler {
     private DepartmentService departmentService;
     ObjectMapper mapper;

@@ -6,14 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 import pet.entities.Employee;
 import pet.entities.EmployeeSearchFilter;
 import java.util.List;
 
+@Repository
 public class EmployeeDaoService {
     private final SessionFactory sessionFactory;
     Logger logger = LoggerFactory.getLogger(EmployeeDaoService.class);
-    private int id;
 
 
     public EmployeeDaoService(SessionFactory sessionFactory) {
@@ -33,7 +34,7 @@ public class EmployeeDaoService {
             session.persist(employee);
             tx.commit();
             logger.debug("Employee added: " + employee);
-            return id;
+            return employee.getId();
         }
         // todo нужно ли перехватывать и бросать database exception?
     }

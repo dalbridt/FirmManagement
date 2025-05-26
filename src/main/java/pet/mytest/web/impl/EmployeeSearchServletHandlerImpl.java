@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import pet.dto.EmployeeDTO;
 import pet.dto.EmployeeMapper;
 import pet.entities.Employee;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 public class EmployeeSearchServletHandlerImpl implements ServletHandler {
 
     private EmployeeService employeeService;

@@ -1,9 +1,9 @@
 package pet.mytest.service;
 
 
+import org.springframework.stereotype.Service;
 import pet.entities.Employee;
 import pet.entities.EmployeeSearchFilter;
-import pet.mytest.dao.DepartmentDaoService;
 import pet.mytest.dao.EmployeeDaoService;
 import pet.mytest.exceptions.DatabaseException;
 
@@ -12,16 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-
+@Service
 public class EmployeeService {
     private EmployeeDaoService employeeDaoService;
-    private DepartmentDaoService departmentDaoService;
-    private Logger logger;
+    private Logger logger= LoggerFactory.getLogger(this.getClass());
 
-    public EmployeeService(EmployeeDaoService employeeDaoService, DepartmentDaoService departmentDaoService) {
+    public EmployeeService(EmployeeDaoService employeeDaoService) {
         this.employeeDaoService = employeeDaoService;
-        this.departmentDaoService = departmentDaoService;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
 
@@ -38,10 +35,6 @@ public class EmployeeService {
         if((emp.getName() == null || emp.getName().isEmpty()) || (emp.getRole() == null || emp.getRole().isEmpty()) || emp.getSalary() <= 0) {
             throw new DatabaseException("Not enough information. Employee name role and salary can't be empty");
         }
-        // TODO нужна новая проверка
-//        if(departmentDaoService.getDepartmentById(emp.getDepartmentId()) == null) {
-//            throw new DatabaseException("Not enough information. Department not found");
-//        }
         return employeeDaoService.addEmployee(emp);
     }
 

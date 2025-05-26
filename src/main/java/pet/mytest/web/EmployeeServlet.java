@@ -6,13 +6,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import pet.mytest.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import pet.mytest.MyConfig;
 import pet.mytest.service.EmployeeService;
 import pet.mytest.web.impl.EmployeeDefaultHandler;
 import pet.mytest.web.impl.EmployeeSearchServletHandlerImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,20 +23,22 @@ import java.util.Map;
 
 @WebServlet("/employee/*")
 public class EmployeeServlet extends HttpServlet {
-    private Logger logger =  LoggerFactory.getLogger(EmployeeServlet.class);
+    private Logger logger = LoggerFactory.getLogger(EmployeeServlet.class);
     private EmployeeService employeeService;
     private ObjectMapper mapper;
     private Map<String, ServletHandler> handlers;
 
     @Override
     public void init() {
-        BeanFactory factory = BeanFactory.getInstance();
-        this.employeeService = factory.getObject(EmployeeService.class);
-        mapper = factory.getMapper();
+        ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class);
+        this.employeeService = (EmployeeService) context.getBean("employeeService");
+        this.mapper = (ObjectMapper) context.getBean("objectMapper");
+
+        // todo хендлеры тоже получать через spring?
         handlers = new HashMap<>();
         EmployeeDefaultHandler defaultHandler = new EmployeeDefaultHandler(employeeService, mapper);
         handlers.put("/employee", defaultHandler);
-        EmployeeSearchServletHandlerImpl employeeSearchServletHandler =new EmployeeSearchServletHandlerImpl(employeeService, mapper);
+        EmployeeSearchServletHandlerImpl employeeSearchServletHandler = new EmployeeSearchServletHandlerImpl(employeeService, mapper);
         handlers.put("/search", employeeSearchServletHandler);
     }
 
@@ -43,13 +48,13 @@ public class EmployeeServlet extends HttpServlet {
         req.getPathInfo();
         String pathInfo = req.getPathInfo();
         ServletHandler handler = handlers.get(pathInfo);
-        if(handler != null){
+        if (handler != null) {
             try {
-             handler.handle(req, resp);
+                handler.handle(req, resp);
             } catch (Exception e) {
                 HandlerUtils.handleException(resp, e);
             }
-        }else {
+        } else {
             HandlerUtils.sendResponse(resp, "NOT FOUND", 404);
         }
     }

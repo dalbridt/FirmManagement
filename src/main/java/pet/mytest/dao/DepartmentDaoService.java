@@ -6,10 +6,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import pet.entities.Department;
 
 import java.util.List;
 
+@Repository
 public class DepartmentDaoService {
 
     private final String GET_ALL_DEPARTMENTS = "from Department";

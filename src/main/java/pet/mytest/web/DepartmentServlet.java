@@ -5,10 +5,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import pet.mytest.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+//import pet.mytest.BeanFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pet.mytest.MyConfig;
 import pet.mytest.service.DepartmentService;
 import pet.mytest.web.impl.DepartmentDefaultHandler;
 import pet.mytest.web.impl.DepartmentSearchHandler;
@@ -28,9 +31,11 @@ public class DepartmentServlet extends HttpServlet {
 
     @Override
     public void init() {
-        BeanFactory factory = BeanFactory.getInstance();
-        this.departmentService = factory.getObject(DepartmentService.class);
-        this.mapper = factory.getMapper();
+        ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class);
+        this.departmentService = context.getBean(DepartmentService.class);
+        this.mapper = context.getBean(ObjectMapper.class);
+
+        // todo хендлеры тоже получать через spring?
         this.handlers = new HashMap<>();
         DepartmentDefaultHandler defaultHandler = new DepartmentDefaultHandler(departmentService, mapper);
         this.handlers.put("/department", defaultHandler);

@@ -41,7 +41,6 @@ public class BeanFactory {
         this.mapper = new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         logger.debug("Time Module initialized");
-        // todo дата в json собирается массивом
     }
 
 

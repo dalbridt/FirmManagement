@@ -24,6 +24,5 @@ public class DepartmentSearchHandler implements ServletHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HandlerUtils.sendResponse(response, "module is under construction", 500);
-        // todo - написать обработчик
     }
 }

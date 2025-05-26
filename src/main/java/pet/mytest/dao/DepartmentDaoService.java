@@ -37,22 +37,24 @@ public class DepartmentDaoService {
         }
     }
 
+
     public List<Department> getAllDepartments() {
         try(Session session = sessionFactory.openSession()) {
             return session.createQuery(GET_ALL_DEPARTMENTS, Department.class).list();
         }
-        // todo нужно ли убрать макрос?
-        // todo не используется
     }
 
     public boolean deleteDepartment(int departmentId) {
-        //  todo - если департамент не удалился - нужно вернуть 404
         try(Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             Department department = session.get(Department.class, departmentId);
-            session.remove(department);
-            transaction.commit();
-            return true;
+            if (department != null) {
+                session.remove(department);
+                transaction.commit();
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

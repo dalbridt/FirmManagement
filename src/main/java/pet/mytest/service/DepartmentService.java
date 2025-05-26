@@ -31,9 +31,11 @@ public class DepartmentService {
         }
     }
 
+
     public List<Department> getAllDepartments() {
         return departmentDaoService.getAllDepartments();
     }
+
 
     public boolean deleteDepartment(int id) {
         return departmentDaoService.deleteDepartment(id);

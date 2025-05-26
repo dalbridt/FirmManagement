@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pet.dto.DepartmentDTO;
+import pet.dto.DepartmentMapper;
 import pet.entities.Department;
 import pet.mytest.exceptions.InvalidDataException;
 import pet.mytest.service.DepartmentService;
@@ -12,6 +14,7 @@ import pet.mytest.web.HandlerUtils;
 import pet.mytest.web.ServletHandler;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class DepartmentDefaultHandler implements ServletHandler {
@@ -27,47 +30,76 @@ public class DepartmentDefaultHandler implements ServletHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String method = request.getMethod();
-        if (method.equals("POST")) {
-            handlePost(request, response);
-            return;
+        switch (method) {
+            case "GET":
+                handleGet(request, response);
+                break;
+            case "POST":
+                handlePost(request, response);
+                break;
+            case "DELETE":
+                handleDelete(request, response);
+                break;
+            default:
+                HandlerUtils.sendResponse(response, "we don't have a handler for your operation, sorry", 404);
+                break;
         }
+    }
+
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response)  {
         String idStr = request.getParameter("id");
-        if (idStr == null) {
-            throw new InvalidDataException("id parameter is required");
-        }
-        int id = Integer.parseInt(idStr);
-        if (method.equals("GET")) {
-            logger.debug("get method called "+ request.getRequestURI());
-            Department dep = departmentService.getDepartmentById(id);
-            if (dep != null) {
-                HandlerUtils.sendResponse(response, mapper.writeValueAsString(dep), 200);
-            } else {
-                HandlerUtils.sendResponse(response, "NOT FOUND : " + id, 404);
-            }
-        } else if (method.equals("DELETE")) {
-            if (departmentService.deleteDepartment(id)) {
+        try {
+            int id = Integer.parseInt(idStr);
+            boolean deleted = departmentService.deleteDepartment(id);
+            if (deleted) {
                 HandlerUtils.sendResponse(response, "Department deleted: " + id, 200);
             } else {
-                HandlerUtils.sendResponse(response, "Could not delete depatrment.no department with id" + id, 404);
+                HandlerUtils.sendResponse(response, "Could not delete department : " + id, 404);
+            }
+        } catch (Exception e) {
+            throw new InvalidDataException("Invalid id "  + idStr);
+        }
+    }
+
+    private void handleGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String idStr = request.getParameter("id");
+        String res;
+        if (idStr == null) {
+            List<DepartmentDTO> dtos = departmentService.getAllDepartments().stream()
+                    .map(DepartmentMapper::convertToDTO).toList();
+            res = mapper.writeValueAsString(dtos);
+        } else {
+            int id = Integer.parseInt(idStr);
+            Department dep = departmentService.getDepartmentById(id);
+            if (dep == null) {
+                HandlerUtils.sendResponse(response, "NOT FOUND : " + id, 404);
+                return;
+            } else {
+                DepartmentDTO dto = DepartmentMapper.convertToDTO(dep);
+                res = mapper.writeValueAsString(dto);
             }
         }
-
+        HandlerUtils.sendResponse(response, res, 200);
     }
 
     private void handlePost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // todo не дает создать с пустым manager id
         String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        if (!json.isEmpty()) {
-            // todo - попробовать перехватить и кинуть кастом исключение
-            Department department = mapper.readValue(json, Department.class);
+        if (json.isEmpty()) {
+            throw new InvalidDataException("json is empty");
+        }
+        DepartmentDTO dptDto;
+        try {
+            dptDto = mapper.readValue(json, DepartmentDTO.class);
+            Department department = DepartmentMapper.convertToEntity(dptDto);
             int departmentId = departmentService.addDepartment(department);
             if (departmentId > 0) {
                 HandlerUtils.sendResponse(response, "new depatrment added: " + departmentId, 200);
             } else {
                 HandlerUtils.sendResponse(response, "couldn't add new department", 400);
             }
-        } else {
-            // todo throw invalid data exception
-            HandlerUtils.sendResponse(response, "couldn't parse request,no json provided in POST", 400);
+        } catch (Exception e) {
+            throw new InvalidDataException("Invalid json " + json);
         }
     }
 }

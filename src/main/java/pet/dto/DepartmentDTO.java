@@ -1,9 +1,8 @@
 package pet.dto;
 
-// todo заменить в сервлете использлование энтити на использование дто
 public class DepartmentDTO {
     private String name;
-    private int managerId;
+    private Integer managerId;
 
     public String getName() {
         return name;
@@ -13,7 +12,7 @@ public class DepartmentDTO {
         this.name = name;
     }
 
-    public int getManagerId() {
+    public Integer getManagerId() {
         return managerId;
     }
 

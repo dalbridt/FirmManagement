@@ -18,7 +18,6 @@ import java.util.HashMap;
 
 import java.util.Map;
 
-// todo @Slf4j - логгер через аннотацию ?
 @WebServlet("/department/*")
 public class DepartmentServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(DepartmentServlet.class);

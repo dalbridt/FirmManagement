@@ -13,7 +13,7 @@ public class Employee {
     private int id;
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY) // todo кто должен быть владельцем связи?
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 

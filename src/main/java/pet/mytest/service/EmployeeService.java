@@ -36,7 +36,6 @@ public class EmployeeService {
 
     public int addNewEmployee(Employee emp) {
         if((emp.getName() == null || emp.getName().isEmpty()) || (emp.getRole() == null || emp.getRole().isEmpty()) || emp.getSalary() <= 0) {
-           //todo ошибка валидации, сдлеать ошибку
             throw new DatabaseException("Not enough information. Employee name role and salary can't be empty");
         }
         // TODO нужна новая проверка

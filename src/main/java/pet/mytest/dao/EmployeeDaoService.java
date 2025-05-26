@@ -49,14 +49,11 @@ public class EmployeeDaoService {
         }
     }
 
-    // todo add hireDateBeforeFilter Won't Work
     public List<Employee> getEmployeesByFilters(EmployeeSearchFilter filter) {
-        // todo использовать Criteria?
         try (Session session = sessionFactory.openSession()) {
             String hql = formHqlFromFilters(filter);
             Query<Employee> query  = session.createQuery(hql,Employee.class);
             modifyQuery(query, filter);
-        logger.debug("HIBERNATE REQUST EMPL with params test ");
             return query.getResultList();
         }
     }
@@ -66,7 +63,7 @@ public class EmployeeDaoService {
         StringBuilder hql = new StringBuilder();
         hql.append("from Employee e join fetch e.department where 1=1"); // to avoid lazy initialization exception
         if (filter.getDepartmentId() != null && filter.getDepartmentId() > 0) {
-            hql.append(" and departmentId = :departmentId");
+            hql.append(" and e.department.id = :departmentId");
         }
 
         if (filter.getHireDateFrom() != null) {

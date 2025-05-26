@@ -1,14 +1,22 @@
 package pet.dto;
 
 import java.time.LocalDate;
-// todo заменить в сервлете использлование энтити на использование дто
+
 public class EmployeeDTO {
+    private int id;
     private String name;
     private int departmentId;
     private String role;
     private String location;
     private double salary;
     private LocalDate hireDate;
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

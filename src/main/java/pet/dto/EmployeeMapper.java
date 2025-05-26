@@ -14,6 +14,7 @@ public class EmployeeMapper {
         dto.setSalary(employee.getSalary());
         dto.setHireDate(employee.getHireDate());
         dto.setDepartmentId(employee.getDepartment().getId());
+        dto.setId(employee.getId());
         return dto;
     }
     public static Employee convertToEntity(EmployeeDTO employeeDTO) {
@@ -26,6 +27,7 @@ public class EmployeeMapper {
         Department department = new Department();
         department.setId(employeeDTO.getDepartmentId());
         employee.setDepartment(department); // todo департамент подставляется отдельно!! нужно ли это?
+        // todo с фронта не может прийти объект с id?
         return employee;
     }
 }

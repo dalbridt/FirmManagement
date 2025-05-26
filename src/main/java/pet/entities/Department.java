@@ -12,8 +12,7 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @Column(name = "manager_id")
-    // todo OneToOne optional =false
+    @Column(name = "manager_id", nullable = true)
     private int managerId;
 
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)  // чтобы объявить сторону, которая не несет ответственности за отношения, используется атрибут mappedBy. Он ссылается на имя свойства связи на стороне владельца.

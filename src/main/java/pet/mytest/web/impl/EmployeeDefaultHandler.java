@@ -63,8 +63,6 @@ public class EmployeeDefaultHandler implements ServletHandler {
             } catch (Exception e) {
                 throw new InvalidDataException("couldn't serialize to JSON");
             }
-            // todo перехватывать ошибки от mapper вездде
-
         } else {
             HandlerUtils.sendResponse(response, "NOT FOUND : " + id, 400);
         }

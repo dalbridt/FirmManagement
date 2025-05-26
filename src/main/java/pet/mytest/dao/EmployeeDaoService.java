@@ -13,6 +13,7 @@ import java.util.List;
 public class EmployeeDaoService {
     private final SessionFactory sessionFactory;
     Logger logger = LoggerFactory.getLogger(EmployeeDaoService.class);
+    private int id;
 
 
     public EmployeeDaoService(SessionFactory sessionFactory) {
@@ -22,7 +23,6 @@ public class EmployeeDaoService {
 
     public Employee getEmployeeById(int id) {
         try (Session session = sessionFactory.openSession()) {
-            // todo  не получится получить эмплои с пустым полем salary
             return session.get(Employee.class, id);
         }
     }
@@ -33,7 +33,7 @@ public class EmployeeDaoService {
             session.persist(employee);
             tx.commit();
             logger.debug("Employee added: " + employee);
-            return employee.getId();
+            return id;
         }
         // todo нужно ли перехватывать и бросать database exception?
     }

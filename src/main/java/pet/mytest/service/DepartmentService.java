@@ -23,12 +23,7 @@ public class DepartmentService {
     }
 
     public int addDepartment(Department department) {
-        // todo добавляет только если валидный managerID? есть еще проверка от hibernate
-        if (employeeDaoService.getEmployeeById(department.getManagerId()) != null) {
-            return departmentDaoService.addNewDepartment(department);
-        } else {
-            throw new InvalidDataException("no manager Id stated");
-        }
+        return departmentDaoService.addNewDepartment(department);
     }
 
 

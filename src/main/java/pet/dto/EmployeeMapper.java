@@ -3,7 +3,6 @@ package pet.dto;
 import pet.entities.Department;
 import pet.entities.Employee;
 
-// todo перенести в Employee service?
 public class EmployeeMapper {
 
     public static EmployeeDTO convertToDTO(Employee employee) {
@@ -26,8 +25,7 @@ public class EmployeeMapper {
         employee.setHireDate(employeeDTO.getHireDate());
         Department department = new Department();
         department.setId(employeeDTO.getDepartmentId());
-        employee.setDepartment(department); // todo департамент подставляется отдельно!! нужно ли это?
-        // todo с фронта не может прийти объект с id?
+        employee.setDepartment(department); // todo департамент подставляется прокси !! нужно ли это?
         return employee;
     }
 }

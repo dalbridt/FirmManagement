@@ -51,7 +51,7 @@ public class EmployeeSearchServletHandlerImpl implements ServletHandler {
         HandlerUtils.sendResponse(response, json, 200);
     }
 
-    // todo org.hibernate.query.SemanticException: Could not interpret path expression 'departmentId'
+
     private static void assembleSearchFilter(EmployeeSearchFilter employeeSearchFilter, HttpServletRequest request) {
         String departmentId = request.getParameter("departmentId");
         if(departmentId != null) employeeSearchFilter.setDepartmentId(Integer.parseInt(departmentId));

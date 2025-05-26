@@ -83,7 +83,6 @@ public class DepartmentDefaultHandler implements ServletHandler {
     }
 
     private void handlePost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // todo не дает создать с пустым manager id
         String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         if (json.isEmpty()) {
             throw new InvalidDataException("json is empty");

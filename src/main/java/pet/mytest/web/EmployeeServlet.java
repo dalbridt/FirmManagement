@@ -34,7 +34,6 @@ public class EmployeeServlet extends HttpServlet {
         this.employeeService = (EmployeeService) context.getBean("employeeService");
         this.mapper = (ObjectMapper) context.getBean("objectMapper");
 
-        // todo хендлеры тоже получать через spring?
         handlers = new HashMap<>();
         EmployeeDefaultHandler defaultHandler = new EmployeeDefaultHandler(employeeService, mapper);
         handlers.put("/employee", defaultHandler);
@@ -45,7 +44,6 @@ public class EmployeeServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         logger.debug("RECEIVED REQUEST EMPLOYEE SERVLET: " + req.getRequestURI() + "?" + req.getQueryString());
-        req.getPathInfo();
         String pathInfo = req.getPathInfo();
         ServletHandler handler = handlers.get(pathInfo);
         if (handler != null) {

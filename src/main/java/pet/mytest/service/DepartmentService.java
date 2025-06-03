@@ -14,7 +14,7 @@ public class DepartmentService {
     private DepartmentDaoService departmentDaoService;
     Logger logger =  LoggerFactory.getLogger(this.getClass());;
 
-    @Autowired // todo использовать только анотацию, а не конструктор? не использовать анотацию вообще?
+    @Autowired // можно использовать просто анотацию над полем и не писать конструктор, но так более явно
     public DepartmentService(DepartmentDaoService departmentDaoService) {
         this.departmentDaoService = departmentDaoService;
     }

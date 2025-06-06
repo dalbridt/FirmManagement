@@ -3,6 +3,7 @@ package pet.mytest.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -66,6 +67,7 @@ class EmployeeServletTestWithMocks {
     }
 
     @Test
+    @DisplayName("вызывает соответствующий хендлер")
     void serviceCallsSearchHandler() throws IOException {
         when(request.getRequestURI()).thenReturn("/search");
         when(request.getPathInfo()).thenReturn("/search");
@@ -75,6 +77,7 @@ class EmployeeServletTestWithMocks {
         }catch(Exception e){
             throw new RuntimeException(e);
         }
+        // проверяет что был вызов этого метода
       verify(employeeSearchHandler).handle(request, response);
     }
 

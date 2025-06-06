@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import pet.entities.Department;
 import pet.entities.Employee;
+import pet.mytest.exceptions.InvalidDataException;
 import pet.mytest.service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,7 +27,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -46,8 +50,10 @@ class EmployeeDefaultHandlerTest {
     @Mock
     HttpServletResponse response;
 
-    @Mock
-    ObjectMapper objectMapper;
+//    @Mock - так вообще норм  создавать мапер?
+    static ObjectMapper objectMapper () {
+       return new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
 
     @InjectMocks
     EmployeeDefaultHandler employeeDefaultHandler;
@@ -62,12 +68,9 @@ class EmployeeDefaultHandlerTest {
         stringWriter = new StringWriter();
         this.printWriter = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(printWriter);
-        // todo один раз на весь тест
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         Field mapperField = EmployeeDefaultHandler.class.getDeclaredField("mapper");
         mapperField.setAccessible(true);
-        mapperField.set(employeeDefaultHandler, objectMapper);
+        mapperField.set(employeeDefaultHandler, objectMapper());
 
     }
 
@@ -75,6 +78,7 @@ class EmployeeDefaultHandlerTest {
     void getEmployee() throws IOException {
         when(request.getMethod()).thenReturn("GET");
         when(request.getParameter("id")).thenReturn("1");
+
         // create employee for result
         Employee employee = new Employee();
         employee.setId(1);
@@ -93,9 +97,35 @@ class EmployeeDefaultHandlerTest {
 
         printWriter.flush();
         String responseBody = stringWriter.toString();
-        System.out.println(responseBody);
+//        System.out.println(responseBody);
         assertTrue(responseBody.contains("Test Name"));
         assertTrue(responseBody.contains("admin"));
+//        нельзя проверить, потому что его устанавливает другой метод
+//        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+
+    @Test
+    void handleDelete_failure() throws IOException {
+        when(request.getMethod()).thenReturn("DELETE");
+        when(request.getParameter("id")).thenReturn("120");
+        when(employeeService.deleteEmployee(120)).thenReturn(false);
+        employeeDefaultHandler.handle(request, response);
+        verify(employeeService).deleteEmployee(120);
+        String responseBody = stringWriter.toString();
+        System.out.println(responseBody);
+        assertTrue(responseBody.contains("Could not delete employee"));
+
+    }
+
+    @Test
+    @DisplayName("проверяет исключение Missing required parameter: id ")
+    void checkExceptionsInHandle() throws IOException {
+        when(request.getMethod()).thenReturn("GET");
+        Exception exception = assertThrows(InvalidDataException.class, ()
+                -> employeeDefaultHandler.handle(request, response));
+
+        assertEquals("Missing required parameter: id", exception.getMessage());
     }
 
 }

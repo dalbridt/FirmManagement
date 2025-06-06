@@ -23,9 +23,7 @@ public class EmployeeService {
 
 
     public boolean deleteEmployee(int id) {
-        logger.debug("getting employee with id: " + id + " to delete");
         if (employeeDaoService.getEmployeeById(id) != null) {
-            logger.debug("Deleting employee with id: " + id);
             return employeeDaoService.deleteEmployee(id);
         }
         return false;

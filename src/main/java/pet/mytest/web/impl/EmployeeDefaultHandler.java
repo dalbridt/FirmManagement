@@ -54,7 +54,6 @@ public class EmployeeDefaultHandler implements ServletHandler {
         }
     }
 
-    // todo везде где отправляютя http - ответы длжны быть дто, маппер не конвертирует теперь entity по-нормальному
     private void  handleGet(HttpServletResponse response, int id) throws IOException {
         Employee empl = employeeService.getEmployeeById(id);
         if (empl != null) {
@@ -93,7 +92,7 @@ public class EmployeeDefaultHandler implements ServletHandler {
             HandlerUtils.sendResponse(response, "Employee deleted: " + id, 200);
         } else {
             // todo нужно ли везде где 404 заменить на ошибку?
-            HandlerUtils.sendResponse(response, "Could not delete employee.no employee with id" + id, 404);
+            HandlerUtils.sendResponse(response, "Could not delete employee.no employee with id " + id, 404);
         }
     }
 }

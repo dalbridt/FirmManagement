@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    change-log: classpath:db/migration/init_changelog.xml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/firm_db
+    username: admin
+    password: secret
+    driver-class-name: org.postgresql.Driver

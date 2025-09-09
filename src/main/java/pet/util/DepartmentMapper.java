@@ -1,0 +1,27 @@
+package pet.util;
+
+import pet.dto.DepartmentDto;
+import pet.entity.Department;
+import pet.exception.InvalidDataException;
+
+public class DepartmentMapper {
+
+    public static DepartmentDto convertToDTO(Department department){
+        DepartmentDto departmentDTO = new DepartmentDto();
+        departmentDTO.setManagerId(department.getManagerId());
+        departmentDTO.setName(department.getName());
+        return departmentDTO;
+    }
+    public static Department convertToEntity(DepartmentDto departmentDTO) {
+        Department department = new Department();
+        if(departmentDTO.getManagerId() != null){
+            department.setManagerId(departmentDTO.getManagerId());
+        }
+        if (departmentDTO.getName() != null) {
+            department.setName(departmentDTO.getName());
+        } else {
+            throw new InvalidDataException("Department name is required");
+        }
+        return department;
+    }
+}

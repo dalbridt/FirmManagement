@@ -1,5 +1,8 @@
 package pet.dao;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -9,7 +12,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import pet.entity.Employee;
 import pet.util.EmployeeSearchFilter;
+
+import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.criteria.Predicate;
 
 @Repository
 public class EmployeeDaoService {
@@ -36,7 +42,6 @@ public class EmployeeDaoService {
             logger.debug("Employee added: " + employee);
             return employee;
         }
-        // todo нужно ли перехватывать и бросать database exception?
     }
 
     public boolean deleteEmployee(Long id) {
@@ -48,6 +53,44 @@ public class EmployeeDaoService {
             logger.debug("Employee deleted: " + employee);
             return true;
         }
+    }
+
+    public List<Employee> getEmployeesByParams(EmployeeSearchFilter filter){
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Employee> query = cb.createQuery(Employee.class); // какой тип будет в ответе
+            Root<Employee> root = query.from(Employee.class); // откуда будем брать данные
+            List <Predicate> predicates = getPredicates(filter, cb, root);
+            query.select(root).where(predicates.toArray(new Predicate[0]));
+            List<Employee> result = session.createQuery(query).getResultList();
+
+            tx.commit();
+            return result;
+        }
+
+    }
+
+    private List <Predicate> getPredicates(EmployeeSearchFilter filter, CriteriaBuilder cb,
+                                           Root<Employee> root) {
+        List <Predicate> predicates = new ArrayList<>();
+        if (filter.getDepartmentId() != null) {
+            predicates.add(cb.like(root.get("department_id"), "%" + filter.getDepartmentId() + "%"));
+        }
+        if (filter.getHireDateFrom() != null) {
+            predicates.add(cb.greaterThanOrEqualTo(root.get("hireDate"), filter.getHireDateFrom()));
+        }
+        if (filter.getRole() != null) {
+            predicates.add(cb.like(root.get("role"), "%" + filter.getRole() + "%"));
+        }
+        if (filter.getLocation() != null) {
+            predicates.add(cb.like(root.get("location"), "%" + filter.getLocation() + "%"));
+        }
+        if (filter.getActive() != null) {
+            predicates.add(cb.like(root.get("active"), "%" + filter.getActive() + "%"));
+        }
+
+        return predicates;
     }
 
     public List<Employee> getEmployeesByFilters(EmployeeSearchFilter filter) {
@@ -71,10 +114,6 @@ public class EmployeeDaoService {
             hql.append(" and hireDate > :hireDateFrom");
         }
 
-        if (filter.getHireDateBefore() != null) {
-            hql.append(" and hireDate < :hireDateBefore");
-        }
-
         if (filter.getRole() != null) {
             hql.append(" and role like :role");
         }
@@ -92,9 +131,7 @@ public class EmployeeDaoService {
         if (filter.getHireDateFrom() != null) {
             query.setParameter("hireDateFrom", filter.getHireDateFrom());
         }
-        if (filter.getHireDateBefore() != null) {
-            query.setParameter("hireDateBefore", filter.getHireDateBefore());
-        }
+
         if (filter.getRole() != null && !filter.getRole().isBlank()) {
             query.setParameter("role", "%" + filter.getRole() + "%");
         }

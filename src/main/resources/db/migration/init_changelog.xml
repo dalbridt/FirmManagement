@@ -7,4 +7,7 @@
     <changeSet id="init" author="me">
         <sqlFile path="create_schema.sql" relativeToChangelogFile="true"/>
     </changeSet>
+    <changeSet id="2" author="me">
+        <sqlFile path="changeset_2.sql" relativeToChangelogFile="true"/>
+    </changeSet>
 </databaseChangeLog>

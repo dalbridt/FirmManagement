@@ -28,4 +28,11 @@ public class Employee {
     @Column(name = "hire_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
+    private boolean active;
+
+    @PrePersist
+    protected void onCreate() {
+        hireDate =  LocalDate.now();
+        active = true;
+    }
 }

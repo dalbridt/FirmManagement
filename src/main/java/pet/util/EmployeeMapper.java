@@ -16,6 +16,7 @@ public class EmployeeMapper {
         dto.setHireDate(employee.getHireDate());
         dto.setDepartmentId(employee.getDepartment().getId());
         dto.setId(employee.getId());
+        dto.setActive(employee.isActive());
         return dto;
     }
     public static Employee convertToEntity(EmployeeDto employeeDTO) {
@@ -29,6 +30,7 @@ public class EmployeeMapper {
         Department department = new Department();
         department.setId(employeeDTO.getDepartmentId());
         employee.setDepartment(department); // todo департамент подставляется прокси !! нужно ли это?
+        employee.setActive(employeeDTO.isActive());
         return employee;
     }
 }

@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pet.dto.EmployeeDto;
 import pet.service.EmployeeService;
+import pet.util.EmployeeSearchFilter;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
@@ -31,7 +34,7 @@ public class EmployeeController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity <?> getEmployee(@PathVariable Long id) {
+    public ResponseEntity <?> getEmployee(@PathVariable("id") Long id) {
         try {
             EmployeeDto empl = employeeService.getEmployeeById(id);
             return new ResponseEntity<>(empl, HttpStatus.OK);
@@ -39,8 +42,17 @@ public class EmployeeController {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
 
-
+    @GetMapping("/search")
+    public ResponseEntity <?> getEmployeesByFilter(@ModelAttribute EmployeeSearchFilter filter) {
+        try{
+            List<EmployeeDto> filtered = employeeService.getEmployeeByParams(filter);
+            return new ResponseEntity<>(filtered, HttpStatus.OK);
+        }catch(Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping

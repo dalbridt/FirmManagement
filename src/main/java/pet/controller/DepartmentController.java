@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pet.dto.DepartmentDto;
 import pet.service.DepartmentService;
-import pet.util.DepartmentMapper;
+
 
 @RestController
 @RequestMapping("/department")
@@ -51,7 +51,7 @@ public class DepartmentController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void deleteDepartmentById(@PathVariable("id") Long id) {
         try {
             departmentService.deleteDepartment(id);

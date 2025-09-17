@@ -7,6 +7,10 @@ import pet.entity.Employee;
 import pet.exception.InvalidDataException;
 import pet.util.EmployeeMapper;
 import pet.dao.EmployeeDaoService;
+import pet.util.EmployeeSearchFilter;
+
+import java.util.List;
+
 
 @Service
 public class EmployeeService {
@@ -48,6 +52,11 @@ public class EmployeeService {
                 && emp.getDepartmentId() != null
         );
 
+    }
+
+    public List<EmployeeDto> getEmployeeByParams(EmployeeSearchFilter filter) {
+        List<Employee> emplEntities = employeeDaoService.getEmployeesByParams(filter);
+        return emplEntities.stream().map(EmployeeMapper::convertToDTO).toList();
     }
 
 //    public List<EmployeeDto> getEmployeesByFilters(EmployeeSearchFilter filter) {

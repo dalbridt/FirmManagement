@@ -3,7 +3,6 @@ package pet.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-//@EqualsAndHashCode(of = "name", "managerId")
 @Entity
 @Table (name = "departments")
 @Data

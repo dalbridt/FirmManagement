@@ -14,4 +14,5 @@ public class EmployeeDto {
     private String location;
     private double salary;
     private LocalDate hireDate;
+    private boolean active;
 }

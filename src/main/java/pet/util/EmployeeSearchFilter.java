@@ -3,11 +3,11 @@ package pet.util;
 import lombok.Data;
 
 import java.time.LocalDate;
-// TODO - надо будет ?
 @Data
 public class EmployeeSearchFilter {
-    private Integer departmentId;
+    private Long departmentId;
     private LocalDate hireDateFrom;
+    private LocalDate hireDateBefore;
     private String role;
     private String location;
     private Boolean active;

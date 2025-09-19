@@ -1,6 +1,8 @@
 package pet.service;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pet.dto.EmployeeDto;
 import pet.entity.Employee;
@@ -15,6 +17,7 @@ import java.util.List;
 @Service
 public class EmployeeService {
     private final EmployeeDaoService employeeDaoService;
+    private Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
     public EmployeeService(EmployeeDaoService employeeDaoService) {
         this.employeeDaoService = employeeDaoService;
@@ -58,11 +61,6 @@ public class EmployeeService {
         List<Employee> emplEntities = employeeDaoService.getEmployeesByParams(filter);
         return emplEntities.stream().map(EmployeeMapper::convertToDTO).toList();
     }
-
-//    public List<EmployeeDto> getEmployeesByFilters(EmployeeSearchFilter filter) {
-//        logger.debug("getEmployeesByFilters called");
-//        return employeeDaoService.getEmployeesByFilters(filter);
-//    }
 }
 
 

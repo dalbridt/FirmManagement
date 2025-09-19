@@ -47,6 +47,7 @@ public class EmployeeController {
     @GetMapping("/search")
     public ResponseEntity <?> getEmployeesByFilter(@ModelAttribute EmployeeSearchFilter filter) {
         try{
+
             List<EmployeeDto> filtered = employeeService.getEmployeeByParams(filter);
             return new ResponseEntity<>(filtered, HttpStatus.OK);
         }catch(Exception e) {

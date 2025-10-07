@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Before("execution(* pet.myapp..*.*(..))")
+    // todo - переделать
+    @Before("execution(* pet..*.*(..))")
     public void logBeforeMethod (JoinPoint joinPoint) {
         logger.info("Calling method: {} with args: {}",
                 joinPoint.getSignature().toShortString(),

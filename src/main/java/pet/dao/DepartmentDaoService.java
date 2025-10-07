@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import pet.entity.Department;
+import pet.exception.DatabaseException;
+import pet.exception.ObjectNotFoundException;
 
 import java.util.List;
 
@@ -30,12 +32,19 @@ public class DepartmentDaoService {
             session.persist(department);
             transaction.commit();
             return department;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new DatabaseException("Error when connecting to the database");
         }
     }
 
     public Department getDepartmentById(Long departmentId) {
         try(Session session = sessionFactory.openSession()) {
-            return session.get(Department.class, departmentId);
+            Department department = session.get(Department.class, departmentId);
+            if (department == null) {
+                throw new ObjectNotFoundException("Department with id " + departmentId + " not found");
+            }
+            return department;
         }
     }
 
@@ -46,17 +55,20 @@ public class DepartmentDaoService {
         }
     }
 
-    public boolean deleteDepartment(Long departmentId) {
+    public void deleteDepartment(Long departmentId) {
         try(Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             Department department = session.get(Department.class, departmentId);
             if (department != null) {
+                logger.info("Deleting department {}", departmentId);
                 session.remove(department);
                 transaction.commit();
-                return true;
             } else {
-                return false;
+                transaction.rollback();
+                throw new ObjectNotFoundException("Department with id " + departmentId + " not found");
             }
+        }catch (Exception e) {
+            throw new DatabaseException("Error when connecting to the database");
         }
     }
 }

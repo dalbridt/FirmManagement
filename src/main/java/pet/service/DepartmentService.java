@@ -1,6 +1,8 @@
 package pet.service;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.dto.DepartmentDto;
@@ -13,6 +15,7 @@ import java.util.List;
 @Service
 public class DepartmentService {
     private final DepartmentDaoService departmentDaoService;
+    private Logger logger = LoggerFactory.getLogger(DepartmentService.class);
 
     @Autowired // можно использовать просто анотацию над полем и не писать конструктор, но так более явно
     public DepartmentService(DepartmentDaoService departmentDaoService) {

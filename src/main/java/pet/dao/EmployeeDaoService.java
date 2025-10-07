@@ -46,10 +46,16 @@ public class EmployeeDaoService {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
             Employee employee = session.get(Employee.class, id);
-            session.remove(employee);
-            tx.commit();
-            logger.debug("Employee deleted: " + employee);
-            return true;
+            if (employee != null) {
+                session.remove(employee);
+                tx.commit();
+                logger.debug("Employee deleted: " + employee);
+                return true;
+            } else {
+                tx.rollback();
+                return false;
+            }
+
         }
     }
 
@@ -98,7 +104,7 @@ public class EmployeeDaoService {
         }
 
         if (filter.getActive() != null) {
-            predicates.add(cb.like(root.get("active"), "%" + filter.getActive() + "%"));
+            predicates.add(cb.equal(root.get("active"), filter.getActive()));
         }
 
         return predicates;

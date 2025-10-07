@@ -21,42 +21,26 @@ public class DepartmentController {
 
     @PostMapping
     public ResponseEntity<?> createDepartment(@RequestBody DepartmentDto departmentDto) {
-        try{
-            DepartmentDto saved = departmentService.createDepartment(departmentDto);
-            return new ResponseEntity<>(saved, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        DepartmentDto saved = departmentService.createDepartment(departmentDto);
+        return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<?> getAllDepartments() {
-        try {
-            return new ResponseEntity<>(departmentService.getAllDepartments(), HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(departmentService.getAllDepartments(), HttpStatus.OK);
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDepartmentById(@PathVariable("id") Long id) {
-        try {
-            DepartmentDto depDto = departmentService.getDepartmentById(id);
-            return new ResponseEntity<>(depDto, HttpStatus.OK);
-        } catch (Exception e ) {
-            logger.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        DepartmentDto depDto = departmentService.getDepartmentById(id);
+        return new ResponseEntity<>(depDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteDepartmentById(@PathVariable("id") Long id) {
-        try {
-            departmentService.deleteDepartment(id);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+    public ResponseEntity<?> deleteDepartmentById(@PathVariable("id") Long id) {
+        departmentService.deleteDepartment(id);
+        return new ResponseEntity<>("Department successfully deleted. id: " + id, HttpStatus.OK);
+
     }
 }

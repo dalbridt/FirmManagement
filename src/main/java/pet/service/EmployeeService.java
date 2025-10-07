@@ -25,9 +25,7 @@ public class EmployeeService {
 
 
     public void deleteEmployee(Long id) {
-        if (employeeDaoService.getEmployeeById(id) != null) {
-            employeeDaoService.deleteEmployee(id);
-        } else {
+        if ( ! employeeDaoService.deleteEmployee(id)) {
             throw new InvalidDataException("Employee with id " + id + " not found");
         }
     }

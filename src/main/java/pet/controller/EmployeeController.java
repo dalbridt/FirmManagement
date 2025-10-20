@@ -45,6 +45,8 @@ public class EmployeeController {
         return new ResponseEntity<>(filtered, HttpStatus.OK);
     }
 
+    //TODO PUT
+
     @DeleteMapping
     public ResponseEntity<?> deleteEmployee(@RequestParam Long id) {
         employeeService.deleteEmployee(id);

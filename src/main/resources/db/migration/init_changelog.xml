@@ -5,6 +5,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet id="init" author="me">
+        <validCheckSum>9:95fcfc085614e05f7662363b28dda7b6</validCheckSum>
         <sqlFile path="create_schema.sql" relativeToChangelogFile="true"/>
     </changeSet>
     <changeSet id="2" author="me">

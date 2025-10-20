@@ -21,7 +21,7 @@ public class DepartmentMapper {
         if(departmentDTO.getManagerId() != null){
             department.setManagerId(departmentDTO.getManagerId());
         }
-        if (departmentDTO.getName() != null) {
+        if (departmentDTO.getName() != null && !departmentDTO.getName().isEmpty()) {
             department.setName(departmentDTO.getName());
         } else {
             throw new InvalidDataException("Department name is required");

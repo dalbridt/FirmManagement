@@ -10,3 +10,9 @@ spring:
     username: admin
     password: secret
     driver-class-name: org.postgresql.Driver
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

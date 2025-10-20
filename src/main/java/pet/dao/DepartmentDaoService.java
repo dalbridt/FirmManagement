@@ -1,6 +1,7 @@
 package pet.dao;
 
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -45,6 +46,9 @@ public class DepartmentDaoService {
                 throw new ObjectNotFoundException("Department with id " + departmentId + " not found");
             }
             return department;
+        } catch (HibernateException e) {
+            logger.error(e.getMessage());
+            throw new DatabaseException("Error when connecting to the database");
         }
     }
 
@@ -52,6 +56,9 @@ public class DepartmentDaoService {
     public List<Department> getAllDepartments() {
         try(Session session = sessionFactory.openSession()) {
             return session.createQuery(GET_ALL_DEPARTMENTS, Department.class).list();
+        } catch (HibernateException e) {
+            logger.error(e.getMessage());
+            throw new DatabaseException("Error when connecting to the database");
         }
     }
 
@@ -67,7 +74,7 @@ public class DepartmentDaoService {
                 transaction.rollback();
                 throw new ObjectNotFoundException("Department with id " + departmentId + " not found");
             }
-        }catch (Exception e) {
+        }catch (HibernateException e) {
             throw new DatabaseException("Error when connecting to the database");
         }
     }

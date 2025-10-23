@@ -10,7 +10,10 @@ spring:
     username: admin
     password: secret
     driver-class-name: org.postgresql.Driver
-
+  security:
+    user:
+      name: admin
+      password: admin
 springdoc:
   api-docs:
     enabled: true

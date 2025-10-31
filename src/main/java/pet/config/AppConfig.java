@@ -21,7 +21,7 @@ import java.util.Properties;
 @ComponentScan
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
-public class MyConfig {
+public class AppConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
